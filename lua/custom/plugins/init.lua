@@ -79,12 +79,11 @@ return {
             --   nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
             -- },
             ['<2-LeftMouse>'] = 'open',
-            ['<space>'] = 'open',
             ['<esc>'] = 'revert_preview',
             ['P'] = { 'toggle_preview', config = { use_float = true } },
             ['l'] = 'focus_preview',
             ['S'] = 'open_split',
-            ['s'] = 'open_vsplit',
+            ['s'] = 'open',
             -- ["S"] = "split_with_window_picker",
             -- ["s"] = "vsplit_with_window_picker",
             ['t'] = 'open_tabnew',
@@ -124,6 +123,8 @@ return {
             ['>'] = 'next_source',
             ['<C-u>'] = { 'scroll_preview', config = { direction = 10 } },
             ['<C-d>'] = { 'scroll_preview', config = { direction = -10 } },
+            ['[['] = 'prev_git_modified',
+            [']]'] = 'next_git_modified',
           },
         },
         nesting_rules = {},
@@ -279,6 +280,11 @@ return {
           width = vim.api.nvim_win_get_width(0) - 4,
         },
       }
+
+      -- mark Actions
+      vim.keymap.set('n', '<leader>ma', require('harpoon.mark').add_file)
+      vim.keymap.set('n', '<leader>mm', require('harpoon.ui').toggle_quick_menu)
+      vim.keymap.set('n', '<leader>mn', require('harpoon.ui').nav_next)
     end,
   },
 
@@ -394,15 +400,36 @@ return {
     end,
   },
 
-  -- popup code action
-  {
-    'weilbith/nvim-code-action-menu',
-    lazy = false,
-    cmd = 'CodeActionMenu',
-  },
-
   -- use key "-" edit directory or file like edit text
-  'elihunter173/dirbuf.nvim',
+  {
+    'stevearc/oil.nvim',
+    opts = {},
+    dependencies = { 'nvim-tree/nvim-web-devicons' }, -- use if prefer nvim-web-devicons
+    config = function()
+      vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+      require('oil').setup {
+        keymaps = {
+          ['g?'] = 'actions.show_help',
+          ['<CR>'] = 'actions.select',
+          ['<C-s>'] = '<ESC><cmd> w <CR>',
+          ['s'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a vertical split' },
+          ['<C-h>'] = { 'actions.select', opts = { horizontal = true }, desc = 'Open the entry in a horizontal split' },
+          ['<C-t>'] = { 'actions.select', opts = { tab = true }, desc = 'Open the entry in new tab' },
+          ['<C-p>'] = 'actions.preview',
+          ['<C-c>'] = 'actions.close',
+          ['<C-l>'] = 'actions.refresh',
+          ['-'] = 'actions.parent',
+          ['_'] = 'actions.open_cwd',
+          ['`'] = 'actions.cd',
+          ['~'] = { 'actions.cd', opts = { scope = 'tab' }, desc = ':tcd to the current oil directory' },
+          ['gs'] = 'actions.change_sort',
+          ['gx'] = 'actions.open_external',
+          ['g.'] = 'actions.toggle_hidden',
+          ['g\\'] = 'actions.toggle_trash',
+        },
+      }
+    end,
+  },
 
   -- align plugin use ga + textObject
   {
@@ -595,6 +622,16 @@ return {
             target = '/main/%1/stores/%2Store/%2Store.ts',
             context = 'modules',
           },
+          {
+            pattern = '/config/i18n/en/(.*).ts$',
+            target = '/config/i18n/ja/%1.ts',
+            context = 'i18n',
+          },
+          {
+            pattern = '/config/i18n/ja/(.*).ts$',
+            target = '/config/i18n/en/%1.ts',
+            context = 'i18n',
+          },
         },
         style = {
           -- How the plugin paints its window borders
@@ -636,7 +673,7 @@ return {
       vim.keymap.set('n', '<leader>mn', '<Cmd>BufferLineMoveNext<CR>', { desc = '[B]uffers [M]ove [N]ext' })
       vim.keymap.set('n', '<leader>mp', '<Cmd>BufferLineMovePrev<CR>', { desc = '[B]uffers [M]ove [P]revious' })
       vim.keymap.set('n', '<leader>mf', "<Cmd>lua require'bufferline'.move_to(1)<CR>", { desc = '[B]uffers [M]ove To [F]irst' })
-      vim.keymap.set('n', '<leader>ml', "<Cmd>lua require'bufferline'.move_to(-1)<CR>", { desc = '[B]uffers [M]ove TO [P]revious' })
+      vim.keymap.set('n', '<leader>ml', "<Cmd>lua require'bufferline'.move_to(-1)<CR>", { desc = '[B]uffers [M]ove TO [L]ast' })
 
       require('bufferline').setup {
         options = {
@@ -652,6 +689,112 @@ return {
           diagnostics = 'nvim_lsp',
         },
       }
+    end,
+  },
+
+  'rafamadriz/friendly-snippets',
+  {
+    'L3MON4D3/LuaSnip',
+    config = function()
+      require 'custom.snippets'
+    end,
+    -- follow latest release.
+    version = 'v2.*', -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+    -- install jsregexp (optional!).
+    build = 'make install_jsregexp',
+    dependencies = { 'rafamadriz/friendly-snippets' },
+  },
+
+  'RRethy/vim-illuminate',
+
+  {
+    'AckslD/nvim-neoclip.lua',
+    dependencies = {
+      { 'nvim-telescope/telescope.nvim' },
+    },
+    config = function()
+      require('neoclip').setup {
+        keys = {
+          telescope = {
+            i = {
+              paste = '<cr>',
+              replay = '<c-q>', -- replay a macro
+              delete = '<c-d>', -- delete an entry
+              edit = '<c-e>', -- edit an entry
+              custom = {},
+            },
+            n = {
+              paste = '<cr>',
+              --- It is possible to map to more than one key.
+              -- paste = { 'p', '<c-p>' },
+              paste_behind = 'P',
+              replay = 'q',
+              delete = 'd',
+              edit = 'e',
+              custom = {},
+            },
+          },
+        },
+      }
+      vim.keymap.set({ 'n', 'i' }, '<C-v>', '<Cmd>Telescope neoclip<CR>', { desc = 'Yank' })
+    end,
+  },
+
+  {
+    'NvChad/nvim-colorizer.lua',
+    config = function()
+      require('colorizer').setup {
+        filetypes = { '*' },
+        user_default_options = {
+          RGB = true, -- #RGB hex codes
+          RRGGBB = true, -- #RRGGBB hex codes
+          names = true, -- "Name" codes like Blue or blue
+          RRGGBBAA = false, -- #RRGGBBAA hex codes
+          AARRGGBB = false, -- 0xAARRGGBB hex codes
+          rgb_fn = false, -- CSS rgb() and rgba() functions
+          hsl_fn = false, -- CSS hsl() and hsla() functions
+          css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+          css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+          -- Available modes for `mode`: foreground, background,  virtualtext
+          mode = 'background', -- Set the display mode.
+          -- Available methods are false / true / "normal" / "lsp" / "both"
+          -- True is same as normal
+          tailwind = false, -- Enable tailwind colors
+          -- parsers can contain values used in |user_default_options|
+          sass = { enable = false, parsers = { 'css' } }, -- Enable sass colors
+          virtualtext = '■',
+          -- update color values even if buffer is not focused
+          -- example use: cmp_menu, cmp_docs
+          always_update = false,
+        },
+      }
+    end,
+  },
+
+  -- Database
+  'tpope/vim-dadbod',
+  'kristijanhusak/vim-dadbod-completion',
+  {
+    'kristijanhusak/vim-dadbod-ui',
+    dependencies = {
+      { 'tpope/vim-dadbod', lazy = true },
+      { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql' }, lazy = true },
+    },
+    cmd = {
+      'DBUI',
+      'DBUIToggle',
+      'DBUIAddConnection',
+      'DBUIFindBuffer',
+    },
+    init = function()
+      -- Your DBUI configuration
+      vim.g.db_ui_use_nerd_fonts = 1
+      vim.g.db_ui_auto_execute_table_helpers = 1
+      vim.g.db_ui_winwidth = 75
+      vim.g.dbs = {
+        { name = 'postgres', url = 'postgres://postgres:3bdce60ce32d1e8360130b32b59a9877@localhost:5432/vagrant' },
+      }
+      vim.keymap.set('n', '<Leader>db', '<Cmd>DBUIToggle<CR>', { desc = 'Toggle DBUI' })
     end,
   },
 }
