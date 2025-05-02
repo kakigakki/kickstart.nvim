@@ -758,7 +758,7 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
 
         --[[ vue ]]
-        tsserver = {
+        ts_ls = {
           init_options = {
             plugins = {
               {
