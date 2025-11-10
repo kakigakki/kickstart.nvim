@@ -327,6 +327,25 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- 强制 json 文件用 2 空格
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'json', 'jsonc' },
+  callback = function()
+    vim.bo.shiftwidth = 2
+    vim.bo.tabstop = 2
+    vim.bo.softtabstop = 2
+    vim.bo.expandtab = true
+  end,
+})
+
+-- [[ Open file in Cursor ]]
+vim.keymap.set('n', '<leader>o', function()
+  local file = vim.fn.expand '%:p'
+  local line = vim.fn.line '.'
+  local col = vim.fn.col '.'
+  vim.fn.jobstart({ 'cursor', '--goto', file .. ':' .. line .. ':' .. col }, { detach = true })
+end, { desc = 'Open current file in Cursor at cursor position' })
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -806,6 +825,8 @@ require('lazy').setup({
         },
         stylelint_lsp = {},
 
+        svelte = {},
+
         --[[ Ruby ]]
         solargraph = {},
         rubocop = {},
@@ -824,6 +845,34 @@ require('lazy').setup({
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
+        },
+        jsonls = {
+          cmd = { 'vscode-json-language-server', '--stdio' },
+          filetypes = { 'json', 'jsonc' },
+          init_options = {
+            provideFormatter = true,
+          },
+          settings = {
+            json = {
+              format = { enable = true },
+              validate = { enable = true },
+            },
+          },
+          on_attach = function(client, bufnr)
+            -- 手动告诉 jsonls 使用 2 空格缩进
+            vim.lsp.buf_notify(bufnr, 'workspace/didChangeConfiguration', {
+              settings = {
+                editor = {
+                  tabSize = 2,
+                  insertSpaces = true,
+                },
+              },
+            })
+          end,
+          root_dir = function(fname)
+            return vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
+          end,
+          single_file_support = true,
         },
       }
 
@@ -909,6 +958,8 @@ require('lazy').setup({
         -- is found.
         vue = { 'eslint_d' },
         typescript = { 'eslint_d' },
+        javascript = { 'eslint_d' },
+        svelte = { 'eslint_d' },
       },
     },
   },
@@ -1087,7 +1138,24 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'dot', 'ruby', 'scss', 'typescript', 'vue' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'vim',
+        'vimdoc',
+        'dot',
+        'ruby',
+        'scss',
+        'typescript',
+        'vue',
+        'markdown',
+        'markdown_inline',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
