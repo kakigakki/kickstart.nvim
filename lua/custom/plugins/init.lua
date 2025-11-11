@@ -223,9 +223,23 @@ return {
   'tpope/vim-fugitive',
 
   {
-    'kdheepak/lazygit.nvim',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
+    'folke/snacks.nvim',
+    lazy = false,
+    opts = {
+      lazygit = {
+        -- your lazygit configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      },
+    },
+    keys = {
+      {
+        '<leader>lg',
+        function()
+          Snacks.lazygit.open(opts)
+        end,
+        desc = 'Open LayGit',
+      },
     },
   },
 

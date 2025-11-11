@@ -287,7 +287,6 @@ local simple_keymap_n = {
   -- other.nvim
   ['<leader>ll'] = { '<cmd> Other <CR>', 'Jump to related file' },
 
-  ['<leader>lg'] = { '<cmd>LazyGit<CR>', 'open lazygit' },
   ['<leader>gc'] = { '<cmd> Telescope git_commits<CR>', 'git commits' },
   ['<leader>gs'] = { '<cmd> Telescope git_status<CR>', 'git status' },
 }
@@ -348,7 +347,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- 强制 json 文件用 2 空格
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'json', 'jsonc', 'vue', 'ts' },
+  pattern = { 'json', 'jsonc', 'vue', 'ts', 'lua' },
   callback = function()
     vim.bo.shiftwidth = 2
     vim.bo.tabstop = 2
