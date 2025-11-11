@@ -348,7 +348,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- 强制 json 文件用 2 空格
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'json', 'jsonc' },
+  pattern = { 'json', 'jsonc', 'vue', 'ts' },
   callback = function()
     vim.bo.shiftwidth = 2
     vim.bo.tabstop = 2
@@ -889,41 +889,53 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-      local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        --
+      -- ✅ 返回 Mason 的根目录路径
+      local mason_root = vim.fn.stdpath 'data' .. '/mason'
+      local vue_language_server_path = mason_root .. '/packages/vue-language-server/node_modules/@vue/language-server'
+      local vue_language_server_entry = mason_root .. '/packages/vue-language-server/node_modules/@vue/language-server/bin/vue-language-server.js'
+      local vtsls_binary = mason_root .. '/bin/vtsls'
 
+      local tsserver_filetypes = { 'typescript', 'javascript', 'vue' }
+      local vue_plugin = {
+        name = '@vue/typescript-plugin',
+        location = vue_language_server_path,
+        languages = { 'vue' },
+        configNamespace = 'typescript',
+      }
+      local servers = {
         --[[ vue ]]
-        ts_ls = {
-          init_options = {
-            plugins = {
-              {
-                name = '@vue/typescript-plugin',
-                location = '/opt/homebrew/lib/node_modules/@vue/typescript-plugin',
-                languages = { 'javascript', 'typescript', 'vue' },
+        -- ts_ls = {
+        --   init_options = {
+        --     plugins = {
+        --       vue_plugin,
+        --     },
+        --   },
+        --   filetypes = tsserver_filetypes,
+        -- },
+        vtsls = {
+          cmd = {
+            'node',
+            '--max-old-space-size=4096', -- ✅ 给 vtsls 提高内存
+            vtsls_binary,
+            '--stdio',
+          },
+          settings = {
+            vtsls = {
+              tsserver = {
+                globalPlugins = {
+                  vue_plugin,
+                },
               },
             },
           },
-          filetypes = {
-            'javascript',
-            'typescript',
-            'vue',
-          },
+          filetypes = tsserver_filetypes,
         },
-        volar = {
-          init_options = {
-            typescript = {
-              tsdk = '/opt/homebrew/lib/node_modules/typescript',
-            },
+        vue_ls = {
+          cmd = {
+            'node',
+            '--max-old-space-size=4096', -- ✅ 同样给 vue_ls 提高内存
+            vue_language_server_entry,
+            '--stdio',
           },
         },
         cssls = {
@@ -949,7 +961,6 @@ require('lazy').setup({
             },
           },
         },
-        stylelint_lsp = {},
 
         svelte = {},
 
@@ -984,7 +995,7 @@ require('lazy').setup({
               validate = { enable = true },
             },
           },
-          on_attach = function(client, bufnr)
+          on_attach = function(_, bufnr)
             -- 手动告诉 jsonls 使用 2 空格缩进
             vim.lsp.buf_notify(bufnr, 'workspace/didChangeConfiguration', {
               settings = {
@@ -1022,52 +1033,10 @@ require('lazy').setup({
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-          ['eslint'] = function()
-            require('lspconfig').eslint.setup {
-              on_attach = function(_, bufnr)
-                vim.api.nvim_create_autocmd('BufWritePre', {
-                  buffer = bufnr,
-                  command = 'EslintFixAll',
-                })
-              end,
-            }
-          end,
-          ['rubocop'] = function()
-            require('lspconfig').rubocop.setup {
-              on_attach = function(client, bufnr)
-                vim.opt.signcolumn = 'yes'
-                vim.api.nvim_create_autocmd('FileType', {
-                  pattern = '*.rb',
-                  callback = function()
-                    vim.lsp.start {
-                      name = 'rubocop',
-                      cmd = { 'bundle', 'exec', 'rubocop', '--lsp' },
-                    }
-                  end,
-                })
-                vim.api.nvim_create_autocmd('BufWritePre', {
-                  pattern = '*.rb',
-                  callback = function()
-                    vim.lsp.buf.format()
-                  end,
-                })
-              end,
-            }
-          end,
-        },
-      }
+      for key, lsp in pairs(servers) do
+        vim.lsp.config(key, lsp)
+      end
+      vim.lsp.enable(ensure_installed)
     end,
   },
 
@@ -1096,7 +1065,7 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 3000,
             lsp_format = 'fallback',
           }
         end
