@@ -232,7 +232,7 @@ end, { desc = 'toggle floating term' })
 vim.keymap.set('n', '<leader>th', function()
   require('nvterm.terminal').toggle 'horizontal'
 end, { desc = 'toggle horizontal term' })
--- vim.keymap.set('t', '1<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '1<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('t', 'qq', '<C-\\><C-n><C-w>q', { desc = 'quit term' })
 
 -- toggle comment
@@ -328,7 +328,7 @@ local simple_keymap_i = {
   ['JJ'] = { '<ESC>' },
 }
 for key, value in pairs(simple_keymap_i) do
-  vim.keymap.set('i', key, value[1], { desc = value[2] })
+  vim.keymap.set('i', key, value[1], { noremap = true, desc = value[2] })
 end
 
 -- [[ Basic Autocommands ]]
@@ -347,7 +347,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- 强制 json 文件用 2 空格
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'json', 'jsonc', 'vue', 'ts', 'lua' },
+  pattern = '*',
   callback = function()
     vim.bo.shiftwidth = 2
     vim.bo.tabstop = 2
@@ -982,34 +982,7 @@ require('lazy').setup({
             },
           },
         },
-        jsonls = {
-          cmd = { 'vscode-json-language-server', '--stdio' },
-          filetypes = { 'json', 'jsonc' },
-          init_options = {
-            provideFormatter = true,
-          },
-          settings = {
-            json = {
-              format = { enable = true },
-              validate = { enable = true },
-            },
-          },
-          on_attach = function(_, bufnr)
-            -- 手动告诉 jsonls 使用 2 空格缩进
-            vim.lsp.buf_notify(bufnr, 'workspace/didChangeConfiguration', {
-              settings = {
-                editor = {
-                  tabSize = 2,
-                  insertSpaces = true,
-                },
-              },
-            })
-          end,
-          root_dir = function(fname)
-            return vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
-          end,
-          single_file_support = true,
-        },
+        jsonls = {},
       }
 
       -- Ensure the servers and tools above are installed

@@ -240,6 +240,13 @@ return {
         end,
         desc = 'Open LayGit',
       },
+      {
+        '<leader>lf',
+        function()
+          Snacks.lazygit.log_file(opts)
+        end,
+        desc = 'Open LayGit File Log',
+      },
     },
   },
 
@@ -814,4 +821,7 @@ return {
       vim.keymap.set('n', '<Leader>db', '<Cmd>DBUIToggle<CR>', { desc = 'Toggle DBUI' })
     end,
   },
+
+  -- Enbale Vue Comment
+  'JoosepAlviste/nvim-ts-context-commentstring',
 }
