@@ -963,8 +963,7 @@ require('lazy').setup({
 
         svelte = {},
 
-        --[[ Ruby ]]
-        solargraph = {},
+        ruby_lsp = {},
         rubocop = {},
 
         --[[ lua ]]
@@ -1053,6 +1052,7 @@ require('lazy').setup({
         typescript = { 'eslint_d' },
         javascript = { 'eslint_d' },
         svelte = { 'eslint_d' },
+        ruby = { 'rubocop' },
       },
     },
   },

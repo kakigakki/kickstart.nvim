@@ -495,16 +495,6 @@ return {
     end,
   },
 
-  {
-    'Exafunction/codeium.vim',
-    event = 'VeryLazy',
-    config = function()
-      vim.keymap.set('i', 'kk', function()
-        return vim.fn['codeium#Accept']()
-      end, { expr = true })
-    end,
-  },
-
   -- replace plugin :S /xx/xx
   -- ["chrisgrieser/nvim-alt-substitute"] = {
   --   config = function()
