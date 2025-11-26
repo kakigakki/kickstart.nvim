@@ -333,7 +333,6 @@ end
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
-
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.hl.on_yank()`
@@ -358,10 +357,15 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- [[ Open file in Cursor ]]
 vim.keymap.set('n', '<leader>o', function()
+  local cursor_bin = '/Applications/Cursor.app/Contents/MacOS/Cursor'
   local file = vim.fn.expand '%:p'
   local line = vim.fn.line '.'
   local col = vim.fn.col '.'
-  vim.fn.jobstart({ 'cursor', '--goto', file .. ':' .. line .. ':' .. col }, { detach = true })
+  vim.fn.jobstart({
+    cursor_bin,
+    '--goto',
+    file .. ':' .. line .. ':' .. col,
+  }, { detach = true })
 end, { desc = 'Open current file in Cursor at cursor position' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -1302,5 +1306,6 @@ require('lazy').setup({
   },
 })
 
+require('custom/chatgpt_sender').setup()
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
