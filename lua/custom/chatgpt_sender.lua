@@ -6,16 +6,16 @@ local max_lru = 4
 
 -- 中英 Prompt
 local prompts = {
-  ['润色文本（自然日语） (Polish Japanese)'] = '请将下面的文本润色成自然、清晰、专业的日语：',
-  ['翻译成日语 (Translate to Japanese)'] = '请将下面的文本翻译成自然、准确的日语：',
-  ['翻译成中文 (Translate to Chinese)'] = '请将下面的文本翻译成清晰的中文：',
-  ['代码重构 (Refactor Code)'] = '请对下面的代码进行专业重构，提高清晰度、可维护性，并给出最终版本（不要解释过程）：',
-  ['寻找 Bug (Find Bugs)'] = '请分析下面的代码并指出可能的 bug 以及修复方案：',
-  ['性能优化 (Optimize Performance)'] = '请分析下面的代码并提出性能优化方案：',
-  ['生成文档注释 (Generate Doc Comments)'] = '请为下面的代码生成完整、专业的文档注释（例如 JSDoc 等风格）：',
-  ['生成单元测试 (Generate Unit Tests)'] = '请根据下面的代码生成高质量的单元测试：',
-  ['分析逻辑问题 (Analyze Logic Issues)'] = '请分析下面的文本或代码逻辑，指出问题并给出建议：',
-  ['解释代码 (Explain Code)'] = '请解释下面的代码：',
+  ['Polish'] = '请将下面的文本润色成自然、清晰、专业的日语：',
+  ['To Japanese'] = '请将下面的文本翻译成自然、准确的日语：',
+  ['To Chinese'] = '请将下面的文本翻译成清晰的中文：',
+  ['Refactor'] = '请对下面的代码进行专业重构，提高清晰度、可维护性，并给出最终版本（不要解释过程）：',
+  ['Bugs'] = '请分析下面的代码并指出可能的 bug 以及修复方案：',
+  ['Performance'] = '请分析下面的代码并提出性能优化方案：',
+  ['Comments'] = '请为下面的代码生成完整、专业的文档注释（例如 JSDoc 等风格）：',
+  ['Test'] = '请根据下面的代码生成高质量的单元测试：',
+  ['Analyze'] = '请分析下面的文本或代码逻辑，指出问题并给出建议：',
+  ['Explain'] = '请解释下面的代码：',
 }
 
 --------------------------------------------------------
@@ -144,7 +144,7 @@ function M.setup()
   -- 命令：对选中范围调用 选择Prompt的菜单
   vim.api.nvim_create_user_command('CGPrompt', telescope_prompt_picker, { range = true })
 
-  vim.keymap.set('v', '<leader>ap', ":'<,'>CGPrompt<CR>", {
+  vim.keymap.set('v', '<leader>am', ":'<,'>CGPrompt<CR>", {
     silent = true,
     desc = 'Fancy Telescope ChatGPT prompt menu (with LRU)',
   })
@@ -152,7 +152,7 @@ function M.setup()
   -- 命令：对选中范围调用 AppleScript
   vim.api.nvim_create_user_command('SendToChatGPT', function(opts)
     -- 取选中行
-    local selected_text = get_visual(opts) .. '\n\n'
+    local selected_text = get_visual(opts) .. '\n\n\n\n'
 
     local script = vim.fn.expand '~' .. '/script/send_to_chatgpt.scpt'
 
@@ -160,7 +160,7 @@ function M.setup()
   end, { range = true })
 
   -- Visual 模式下的快捷键，比如 <leader>cg
-  vim.keymap.set('v', '<leader>aj', ":'<,'>SendToChatGPT<CR>", {
+  vim.keymap.set('v', '<leader>ao', ":'<,'>SendToChatGPT<CR>", {
     silent = true,
     desc = 'Send selection to ChatGPT',
   })
