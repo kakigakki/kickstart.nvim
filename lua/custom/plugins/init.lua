@@ -670,40 +670,29 @@ return {
   'tpope/vim-rails',
 
   {
-    'akinsho/bufferline.nvim',
-    version = '*',
-    dependencies = 'nvim-tree/nvim-web-devicons',
-    config = function()
-      vim.opt.termguicolors = true
-      vim.keymap.set('n', '<leader>co', '<Cmd>BufferLineCloseOthers<CR>', { desc = '[B]uffers [C]lose [O]thers' })
-      vim.keymap.set('n', '<leader>cl', '<Cmd>BufferLineCloseLeft<CR>', { desc = '[B]uffers [C]lose [L]eft' })
-      vim.keymap.set('n', '<leader>cr', '<Cmd>BufferLineCloseRight<CR>', { desc = '[B]uffers [C]lose [R]ight' })
-      for i = 1, 5, 1 do
-        vim.keymap.set('n', 'gt' .. i, '<Cmd>BufferLineGoToBuffer' .. i .. '<CR>', { desc = 'Buffers [G]o [T]o visible buffer number' })
+    'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    },
+    init = function()
+      local map = function(lhs, rhs, desc)
+        vim.keymap.set('n', lhs, rhs, { desc = desc, noremap = true, silent = true })
       end
-      vim.keymap.set('n', 'gt-1', '<Cmd>BufferLineGoToBuffer -1<CR>', { desc = 'Buffers [G]o [T]o visible buffer number' })
-      vim.keymap.set('n', '<Tab>', '<Cmd>BufferLineCycleNext<CR>', { desc = 'Next Buffer' })
-      vim.keymap.set('n', '<S-Tab>', '<Cmd>BufferLineCyclePrev<CR>', { desc = 'Prev Buffer' })
-      vim.keymap.set('n', '<leader>mn', '<Cmd>BufferLineMoveNext<CR>', { desc = '[B]uffers [M]ove [N]ext' })
-      vim.keymap.set('n', '<leader>mp', '<Cmd>BufferLineMovePrev<CR>', { desc = '[B]uffers [M]ove [P]revious' })
-      vim.keymap.set('n', '<leader>mf', "<Cmd>lua require'bufferline'.move_to(1)<CR>", { desc = '[B]uffers [M]ove To [F]irst' })
-      vim.keymap.set('n', '<leader>ml', "<Cmd>lua require'bufferline'.move_to(-1)<CR>", { desc = '[B]uffers [M]ove TO [L]ast' })
 
-      require('bufferline').setup {
-        options = {
-          -- name_formatter = function(buf) -- buf contains:
-          --   -- name                | str        | the basename of the active file
-          --   -- path                | str        | the full path of the active file
-          --   -- bufnr (buffer only) | int        | the number of the active buffer
-          --   -- buffers (tabs only) | table(int) | the numbers of the buffers in the tab
-          --   -- tabnr (tabs only)   | int        | the "handle" of the tab, can be converted to its ordinal number using: `vim.api.nvim_tabpage_get_number(buf.tabnr)`
-          --   return buf.name .. ' - ' .. buf.bufnr
-          -- end,
-          numbers = 'buffer_id',
-          diagnostics = 'nvim_lsp',
-        },
-      }
+      map('<S-Tab>', '<Cmd>BufferPrevious<CR>', 'Go to previous buffer')
+      map('<Tab>', '<Cmd>BufferNext<CR>', 'Go to next buffer')
+      map('<leader>bp', '<Cmd>BufferPin<CR>', 'Pin buffer')
+      map('<leader>bc', '<Cmd>BufferPick<CR>', 'Pick buffer')
+      map('<leader>bs', '<Cmd>BufferOrderByName<CR>', 'Sort buffers')
     end,
+    opts = {
+      -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+      animation = true,
+      -- insert_at_start = true,
+      -- …etc.
+    },
+    version = '^1.0.0', -- optional: only update when a new 1.x version is released
   },
 
   'rafamadriz/friendly-snippets',

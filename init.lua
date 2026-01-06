@@ -344,6 +344,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- 一键禁用当前 buffer 的全部 LSP
+vim.api.nvim_create_user_command('LspDetachBuffer', function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  for _, client in pairs(vim.lsp.get_active_clients { bufnr = bufnr }) do
+    vim.lsp.buf_detach_client(bufnr, client.id)
+  end
+end, {})
+
 -- 强制 json 文件用 2 空格
 vim.api.nvim_create_autocmd('FileType', {
   pattern = '*',
@@ -942,13 +950,10 @@ require('lazy').setup({
           },
         },
         cssls = {
-          filetypes = { 'css', 'scss', 'less' },
+          filetypes = { 'css', 'scss' },
           settings = {
             {
               css = {
-                validate = true,
-              },
-              less = {
                 validate = true,
               },
               scss = {
@@ -1188,7 +1193,7 @@ require('lazy').setup({
     priority = 1000,
     config = function()
       require('monokai-pro').setup {
-        filter = 'pro', -- 可选: classic | octagon | pro | machine | ristretto | spectrum
+        filter = 'spectrum', -- 可选: classic | octagon | pro | machine | ristretto | spectrum
         background_clear = {
           -- 'neo-tree',
           -- 'bufferline',
