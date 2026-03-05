@@ -229,7 +229,7 @@ vim.keymap.set({ 'n', 'v' }, ';', ':', { desc = 'search mode', nowait = true })
 vim.keymap.set('n', '<leader>tm', function()
   require('nvterm.terminal').toggle 'float'
 end, { desc = 'toggle floating term' })
-vim.keymap.set('n', '<leader>th', function()
+vim.keymap.set('n', '<leader>tt', function()
   require('nvterm.terminal').toggle 'horizontal'
 end, { desc = 'toggle horizontal term' })
 vim.keymap.set('t', '1<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })

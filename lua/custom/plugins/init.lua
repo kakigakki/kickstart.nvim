@@ -864,4 +864,75 @@ return {
     end,
     ft = { 'markdown' },
   },
+
+  {
+    'carlos-algms/agentic.nvim',
+
+    opts = {
+      -- Available by default: "claude-acp" | "gemini-acp" | "codex-acp" | "opencode-acp" | "cursor-acp" | "auggie-acp"
+      provider = 'claude-acp', -- setting the name here is all you need to get started
+    },
+
+    --- @class agentic.UserConfig.Windows
+    --- @field width string|number
+    --- @field chat agentic.UserConfig.Windows.Chat
+    --- @field input agentic.UserConfig.Windows.Input
+    --- @field code agentic.UserConfig.Windows.Code
+    --- @field files agentic.UserConfig.Windows.Files
+    --- @field todos agentic.UserConfig.Windows.Todos
+    windows = {
+      width = '30%',
+      chat = { win_opts = {} },
+      input = { height = 10, win_opts = {} },
+      code = { max_height = 15, win_opts = {} },
+      files = { max_height = 10, win_opts = {} },
+      todos = { display = true, max_height = 10, win_opts = {} },
+    },
+
+    -- these are just suggested keymaps; customize as desired
+    keys = {
+      {
+        '<Leader>aa',
+        function()
+          require('agentic').toggle()
+        end,
+        mode = { 'n', 'v' },
+        desc = 'Toggle Agentic Chat',
+      },
+      {
+        '<Leader>av',
+        function()
+          require('agentic').add_selection_or_file_to_context()
+        end,
+        mode = { 'n', 'v' },
+        desc = 'Add file or selection to Agentic to Context',
+      },
+      {
+        '<Leader>as',
+        function()
+          require('agentic').new_session()
+        end,
+        mode = { 'n', 'v' },
+        desc = 'New Agentic Session',
+      },
+      {
+        '<Leader>ar',
+        function()
+          require('agentic').restore_session()
+        end,
+        desc = 'Agentic Restore session',
+        silent = true,
+        mode = { 'n', 'v' },
+      },
+      {
+        '<Leader>ab',
+        function()
+          require('agentic').stop_generation()
+        end,
+        desc = 'Agentic Stop Generation',
+        silent = true,
+        mode = { 'n', 'v' },
+      },
+    },
+  },
 }
