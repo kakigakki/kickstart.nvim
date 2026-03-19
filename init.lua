@@ -972,7 +972,19 @@ require('lazy').setup({
 
         svelte = {},
 
-        ruby_lsp = {},
+        ruby_lsp = {
+          cmd = { 'bundle', 'exec', 'ruby-lsp' },
+          filetypes = { 'ruby', 'eruby' },
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, { 'Gemfile', '.git' })
+            if root then
+              on_dir(root)
+            end
+          end,
+          init_options = {
+            formatter = 'auto',
+          },
+        },
         rubocop = {},
 
         --[[ lua ]]
@@ -1193,7 +1205,7 @@ require('lazy').setup({
     priority = 1000,
     config = function()
       require('monokai-pro').setup {
-        filter = 'spectrum', -- 可选: classic | octagon | pro | machine | ristretto | spectrum
+        filter = 'ristretto', -- 可选: classic | octagon | pro | machine | ristretto | spectrum
         background_clear = {
           -- 'neo-tree',
           -- 'bufferline',
@@ -1329,7 +1341,5 @@ require('lazy').setup({
   },
 })
 
-require('custom/chatgpt_sender').setup()
-require('custom/cursor_sender').setup()
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
