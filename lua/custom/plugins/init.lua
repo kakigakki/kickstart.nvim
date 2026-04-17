@@ -869,8 +869,12 @@ return {
     'carlos-algms/agentic.nvim',
 
     opts = {
-      -- Available by default: "claude-acp" | "gemini-acp" | "codex-acp" | "opencode-acp" | "cursor-acp" | "auggie-acp"
-      provider = 'claude-agent-acp', -- setting the name here is all you need to get started
+      acp_providers = {
+        ['claude-agent-acp'] = {
+          -- Automatically switch to this mode when a new session starts
+          default_mode = 'bypassPermissions',
+        },
+      },
     },
 
     --- @class agentic.UserConfig.Windows
