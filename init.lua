@@ -1003,6 +1003,23 @@ require('lazy').setup({
           },
         },
         jsonls = {},
+
+        --[[ python ]]
+        pyright = {
+          settings = {
+            pyright = {
+              -- ruff が import 整理を担当するため、pyright 側は無効化
+              disableOrganizeImports = true,
+            },
+            python = {
+              analysis = {
+                -- ruff が lint を担当するため、pyright は型チェックに専念
+                ignore = { '*' },
+              },
+            },
+          },
+        },
+        ruff = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -1021,6 +1038,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'ruff', -- Python linter and formatter
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -1065,7 +1083,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        -- python: ruff LSP がフォーマットを担当 (lsp_format = 'fallback' で自動適用)
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
@@ -1267,6 +1285,7 @@ require('lazy').setup({
         'vim',
         'vimdoc',
         'dot',
+        'python',
         'ruby',
         'scss',
         'typescript',
