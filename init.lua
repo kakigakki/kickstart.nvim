@@ -1223,7 +1223,7 @@ require('lazy').setup({
     priority = 1000,
     config = function()
       require('monokai-pro').setup {
-        filter = 'ristretto', -- 可选: classic | octagon | pro | machine | ristretto | spectrum
+        filter = 'pro', -- 可选: classic | octagon | pro | machine | ristretto | spectrum
         background_clear = {
           -- 'neo-tree',
           -- 'bufferline',
