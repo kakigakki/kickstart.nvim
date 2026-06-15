@@ -870,10 +870,7 @@ return {
 
     opts = {
       acp_providers = {
-        ['claude-agent-acp'] = {
-          -- Automatically switch to this mode when a new session starts
-          default_mode = 'bypassPermissions',
-        },
+        ['claude-agent-acp'] = {},
       },
     },
 

@@ -926,7 +926,7 @@ require('lazy').setup({
         vtsls = {
           cmd = {
             'node',
-            '--max-old-space-size=4096', -- ✅ 给 vtsls 提高内存
+            '--max-old-space-size=12288', -- ✅ 给 vtsls 提高内存（12GB）
             vtsls_binary,
             '--stdio',
           },
@@ -938,16 +938,20 @@ require('lazy').setup({
                 },
               },
             },
+            typescript = {
+              tsserver = {
+                maxTsServerMemory = 12288,
+                experimental = {
+                  enableProjectDiagnostics = false,
+                },
+              },
+              preferences = {
+                includePackageJsonAutoImports = 'off',
+              },
+              updateImportsOnFileMove = { enabled = 'never' },
+            },
           },
           filetypes = tsserver_filetypes,
-        },
-        vue_ls = {
-          cmd = {
-            'node',
-            '--max-old-space-size=4096', -- ✅ 同样给 vue_ls 提高内存
-            vue_language_server_entry,
-            '--stdio',
-          },
         },
         cssls = {
           filetypes = { 'css', 'scss' },
